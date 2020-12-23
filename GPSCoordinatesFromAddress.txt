@@ -1,0 +1,44 @@
+Public Function getGoogDistance(startLat As String, startLon As String, _
+endLat As String, endLon As String) As Integer
+
+Dim sURL As String
+Dim BodyTxt As String
+Dim key As String
+key = "" 'set your api key here.
+
+sURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins="
+sURL = sURL & startLat & "," & startLon & "&destinations="
+sURL = sURL & endLat & "," & endLon & "&mode=driving&units=imperial&sensor=true&key=" & key
+
+BodyTxt = getHTML(sURL)
+
+'If InStr(1, BodyTxt, "distance:""") = 0 Then getGoogDistance = "Error": Exit Function
+
+'getGoogDistance = BodyTxt
+getGoogDistance = parseGoog(BodyTxt)
+
+End Function
+
+Public Function getHTML(strURL As String) As String
+'Returns the HTML code underlying a given URL
+Dim oXH As Object
+Set oXH = CreateObject("msxml2.xmlhttp")
+With oXH
+.Open "get", strURL, False
+.send
+getHTML = .responseText
+End With
+Set oXH = Nothing
+End Function
+
+
+Public Function parseGoog(strHTML As String) As String
+If InStr(1, strHTML, "distance") = 0 Then parseGoog = "Not Found": Exit Function
+
+startPos = InStr(1, strHTML, "distance")
+startPos = InStr(startPos, strHTML, "text")
+startPos = InStr(startPos, strHTML, ":") + 3
+endPos = InStr(startPos, strHTML, "mi") - 1
+returnDistance = Mid(strHTML, startPos, endPos - startPos)
+parseGoog = returnDistance
+End Function

@@ -1,0 +1,65 @@
+Public Function getGoogGPS(address As String, city As String, state As String, zip As String)
+
+Dim sURL As String
+Dim BodyTxt As String
+Dim key As String
+key = "" 'set your api key here.
+
+sURL = "https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address="
+sURL = sURL & address & " " & city & ", " & state & " " & zip & "&key=" & key
+
+BodyTxt = getHTML(sURL)
+
+'If InStr(1, BodyTxt, "distance:""") = 0 Then getGoogDistance = "Error": Exit Function
+
+getGoogGPS = parseGoog(BodyTxt)
+'getGoogGPS = sURL
+
+End Function
+
+Public Function getUrl(address As String, city As String, state As String, zip As String)
+
+Dim sURL As String
+Dim BodyTxt As String
+Dim key As String
+key = "" 'set your api key here.
+
+sURL = "https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address="
+sURL = sURL & address & " " & city & ", " & state & " " & zip & "&key=" & key
+
+getUrl = sURL
+
+End Function
+
+
+Public Function getHTML(strURL As String) As String
+'Returns the HTML code underlying a given URL
+Dim oXH As Object
+Set oXH = CreateObject("msxml2.xmlhttp")
+With oXH
+.Open "get", strURL, False
+.send
+getHTML = .responseText
+End With
+Set oXH = Nothing
+End Function
+
+
+Public Function parseGoog(strHTML As String) As String
+
+If InStr(1, strHTML, "geometry") = 0 Then parseGoog = "Not Found": Exit Function
+
+startPos = InStr(1, strHTML, "location")
+startPos = InStr(startPos, strHTML, "lat")
+startPos = InStr(startPos, strHTML, ":") + 2
+endPos = InStr(startPos, strHTML, ",")
+lat = Mid(strHTML, startPos, endPos - startPos)
+
+startPos = endPos
+startPos = InStr(startPos, strHTML, ":") + 3
+endPos = InStr(startPos, strHTML, "}") - 13
+lng = Mid(strHTML, startPos, endPos - startPos)
+
+parseGoog = lat & ", -" & lng
+
+End Function
