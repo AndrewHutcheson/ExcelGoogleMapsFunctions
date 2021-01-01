@@ -17,20 +17,6 @@ getGoogGPS = parseGoog(BodyTxt)
 
 End Function
 
-Public Function getUrl(address As String, city As String, state As String, zip As String)
-
-Dim sURL As String
-Dim BodyTxt As String
-Dim key As String
-key = "" 'set your api key here.
-
-sURL = "https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address="
-sURL = sURL & address & " " & city & ", " & state & " " & zip & "&key=" & key
-
-getUrl = sURL
-
-End Function
-
 
 Public Function getHTML(strURL As String) As String
 'Returns the HTML code underlying a given URL
